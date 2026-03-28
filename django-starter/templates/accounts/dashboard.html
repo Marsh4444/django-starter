@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-subtitle">Welcome back, {{ user.get_full_name_or_username }}</p>
+</div>
+
+<!-- 
+    Customize this dashboard per project.
+    Add stat cards, recent activity, quick links, etc.
+-->
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <div class="stat-label">Role</div>
+        <div class="stat-value">{{ user.get_role_display_name }}</div>
+    </div>
+    <!-- Add more stat cards here -->
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Django Starter{% endblock %}</title>
+
+    <!-- Replace with your chosen fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">{% block brand %}Starter{% endblock %}</a>
+
+            <button class="navbar-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+
+            <div class="navbar-links" id="navLinks">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:dashboard' %}"
+                       class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        Dashboard
+                    </a>
+
+                    <!-- Profile dropdown -->
+                    <div class="profile-dropdown">
+                        <button class="profile-icon" id="profileToggle">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}">
+                            {% else %}
+                                <div class="profile-initial">{{ user.username|slice:":1"|upper }}</div>
+                            {% endif %}
+                        </button>
+                        <div class="profile-menu" id="profileMenu">
+                            <div class="profile-menu-header">
+                                <div class="profile-menu-name">{{ user.get_full_name_or_username }}</div>
+                                <div class="profile-menu-role">{{ user.get_role_display_name }}</div>
+                            </div>
+                            <div class="profile-menu-divider"></div>
+                            <a href="{% url 'accounts:profile' %}" class="profile-menu-item">
+                                <span>👤</span> Profile
+                            </a>
+                            <a href="{% url 'accounts:profile_edit' %}" class="profile-menu-item">
+                                <span>⚙️</span> Edit Profile
+                            </a>
+                            <div class="profile-menu-divider"></div>
+                            <a href="{% url 'accounts:logout' %}" class="profile-menu-item">
+                                <span>🚪</span> Logout
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="nav-link">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- FLASH MESSAGES -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block extra_js %}{% endblock %}
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-copy">
+                &copy; {% now "Y" %} <strong>{% block footer_brand %}Your Project{% endblock %}</strong>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // ── Auto-dismiss flash messages ──
+        setTimeout(function () {
+            document.querySelectorAll('.alert').forEach(function (el) {
+                el.classList.add('fade-out');
+                setTimeout(() => el.remove(), 300);
+            });
+        }, 2500);
+
+        // ── Profile dropdown ──
+        const profileToggle = document.getElementById('profileToggle');
+        const profileMenu = document.getElementById('profileMenu');
+        if (profileToggle) {
+            profileToggle.addEventListener('click', e => {
+                e.stopPropagation();
+                profileMenu.classList.toggle('show');
+            });
+            document.addEventListener('click', () => profileMenu.classList.remove('show'));
+        }
+
+        // ── Mobile hamburger ──
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+        if (navToggle) {
+            navToggle.addEventListener('click', () => {
+                navToggle.classList.toggle('open');
+                navLinks.classList.toggle('open');
+            });
+        }
+    </script>
+
+</body>
+</html>
